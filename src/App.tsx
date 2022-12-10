@@ -1,4 +1,6 @@
 import * as Tone from 'tone'
+import { Chord, ChordType, transpose } from 'tonal'
+
 function App() {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -6,8 +8,32 @@ function App() {
     </div>
   )
 }
+
+const acceptedQuality = ['Major', 'Minor', 'Diminished', 'Augmented']
+const triadChordsName = ChordType.all().filter(chord => chord.intervals.length === 3).filter(chord => acceptedQuality.includes(chord.quality)).filter(
+  chord => !!chord.name
+)
+console.log({ triadChordsName })
+const getChordNotesFromInterval = (root: string, interval: string[]) => {
+  const notes = []
+
+  for (let dist of interval) {
+    notes.push(transpose(root, dist))
+  }
+
+  console.log({ notes })
+  return notes
+}
+const getRandomChord = () => {
+  const randomInterval = triadChordsName[Math.floor(Math.random() * triadChordsName.length)].intervals
+  return getChordNotesFromInterval('c', randomInterval)
+
+}
 function playASound() {
-  playChord(["C4", "E4", "g4"])
+
+  const notes = getRandomChord()
+
+  playChord(notes.map(note => `${note}5`))
 }
 
 function playChord(chord: string[]) {
